@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('barbershop_id')->nullable();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->rememberToken();
+            $table->string('role'); // super_admin, owner, barber, customer
+            $table->string('avatar_url')->nullable();
+            $table->string('status')->default('active');
+            $table->softDeletes();
             $table->timestamps();
         });
 
