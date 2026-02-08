@@ -1,7 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Dedoc\Scramble\Scramble;
 
-Route::get('/', function () {
-    return view('welcome');
+// API Docs
+Scramble::routes(function () {
+    return Route::getRoutes();
 });

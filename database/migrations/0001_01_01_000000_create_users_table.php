@@ -20,8 +20,9 @@ return new class extends Migration
             $table->string('role'); // super_admin, owner, barber, customer
             $table->string('avatar_url')->nullable();
             $table->string('status')->default('active');
-            $table->softDeletes();
             $table->timestamps();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->softDeletes();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

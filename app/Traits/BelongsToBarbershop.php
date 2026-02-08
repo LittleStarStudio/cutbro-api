@@ -24,5 +24,18 @@ trait BelongsToBarbershop
                 $model->barbershop_id = Auth::user()->barbershop_id;
             }
         });
+
+        static::updating(function ($model) {
+            if (Auth::check() && $model->barbershop_id !== Auth::user()->barbershop_id) {
+                abort(403, 'Unauthorized tenant access');
+            }
+        });
+
+        static::deleting(function ($model) {
+            if (Auth::check() && $model->barbershop_id !== Auth::user()->barbershop_id) {
+                abort(403, 'Unauthorized tenant access');
+            }
+        });
+
     }
 }
