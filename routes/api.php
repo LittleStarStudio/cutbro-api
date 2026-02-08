@@ -1,0 +1,96 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\AuthController;
+use App\Models\User;
+use Illuminate\Http\Request;
+
+// Users Verification (API)
+/**
+ * Verify email
+ *
+ * Endpoint untuk memverifikasi email user.
+ *
+ * @group Authentication
+ *
+ * @response 200 {
+ *   "success": true,
+ *   "message": "Email verified successfully"
+ * }
+ */
+Route::get('/auth/verify-email/{id}/{hash}', function (Request $request, $id, $hash) {
+
+    $user = User::findOrFail($id);
+
+    // Validasi hash
+    if (! hash_equals(
+        sha1($user->getEmailForVerification()),
+        $hash
+    )) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid verification link'
+        ], 403);
+    }
+
+    // Jika sudah diverifikasi
+    if ($user->hasVerifiedEmail()) {
+        return response()->json([
+            'success' => true,
+            'message' => 'Email already verified'
+        ]);
+    }
+
+    // Tandai verified
+    $user->markEmailAsVerified();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Email verified successfully'
+    ]);
+
+})->name('verification.verify');
+
+
+// Users Auth
+Route::prefix('auth')->group(function () {
+
+   // Google
+    Route::get('/google/redirect', [AuthController::class, 'googleRedirect'])
+        ->middleware('throttle:10,1');
+    Route::get('/google/callback', [AuthController::class, 'googleCallback'])
+        ->middleware('throttle:10,1');
+
+   // Login
+    Route::post('/login',[AuthController::class,'login'])
+        ->middleware('throttle:5,1');
+    
+    Route::post('/refresh', [AuthController::class,'refresh']);
+
+    // Register
+    Route::post('/register-owner', [AuthController::class,'registerOwner'])
+        ->middleware('throttle:10,1');
+    Route::post('/register-customer', [AuthController::class,'registerCustomer'])
+        ->middleware('throttle:10,1');
+
+    // Password forgot & reset
+    Route::post('/forgot-password', [AuthController::class,'forgotPassword'])
+        ->middleware('throttle:5,1');
+    Route::post('/reset-password', [AuthController::class,'resetPassword'])
+        ->middleware('throttle:10,1');
+
+    // Profile (me), logout, logout all
+    Route::middleware(['auth:sanctum', 'verified.api', 'token.expired'])->group(function(){
+
+        Route::get('/me',[AuthController::class,'me']);
+        Route::post('/logout',[AuthController::class,'logout']);
+        Route::post('/logout-all', [AuthController::class,'logoutAll']);
+        Route::post('/set-password', [AuthController::class,'setPassword']);
+
+        Route::post('/block-user', [AuthController::class,'blockUser']);
+
+        Route::patch('/users/{id}/status', [AuthController::class,'updateStatus']);
+        Route::get('/login-logs', [AuthController::class, 'loginLogs']);
+    });
+
+});

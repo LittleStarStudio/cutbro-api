@@ -2,42 +2,39 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
+use Illuminate\Support\Str;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, SoftDeletes, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
+        'google_id',
+        'provider',
         'password',
+        'barbershop_id',
+        'role_id',
+        'avatar_url',
+        'status',
+        'login_attempts',
+        'locked_until',
+        'last_login_at',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -45,4 +42,40 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Create access token (short-lived)
+    public function createAccessToken(string $device, array $abilities)
+    {
+        return $this->tokens()->create([
+            'name' => $device,
+            'token' => hash('sha256', Str::random(40)),
+            'abilities' => $abilities,
+            'expires_at' => now()->addMinutes(15), // ACCESS TOKEN
+            'is_refresh' => false,
+        ]);
+    }
+
+    //  Create refresh token (long-lived)
+    public function createRefreshToken(string $device)
+    {
+        return $this->tokens()->create([
+            'name' => $device . '_refresh',
+            'token' => hash('sha256', Str::random(64)),
+            'abilities' => ['refresh'],
+            'expires_at' => now()->addDays(7), // REFRESH TOKEN
+            'is_refresh' => true,
+        ]);
+    }
+
+    // Relational tables
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function blocks()
+    {
+        return $this->hasMany(BarbershopUserBlock::class);
+    }
+    
 }
