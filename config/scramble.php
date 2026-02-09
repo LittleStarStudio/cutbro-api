@@ -65,7 +65,7 @@ return [
      */
     'servers' => [
 
-        'Deploy' => 'https://cutbro-api-production.up.railway.app/api/auth',
+        'Deploy' => 'https://cutbro-api-production.up.railway.app/api/',
         
     ],
 
