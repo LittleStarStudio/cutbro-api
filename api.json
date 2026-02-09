@@ -7,8 +7,8 @@
     },
     "servers": [
         {
-            "url": "https://cutbro-api-production.up.railway.app/api/auth",
-            "description": "Deploy"
+            "url": "https://cutbro-api-production.up.railway.app",
+            "description": "Deployl"
         }
     ],
     "paths": {
