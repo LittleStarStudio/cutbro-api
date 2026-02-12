@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
-use App\Models\User;
+use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Http\Request;
 
 // Users Verification (API)
@@ -87,8 +87,9 @@ Route::prefix('auth')->group(function () {
         Route::post('/logout-all', [AuthController::class,'logoutAll']);
         Route::post('/set-password', [AuthController::class,'setPassword']);
 
-        Route::post('/block-user', [AuthController::class,'blockUser']);
+        Route::patch('/profile', [ProfileController::class,'update']);
 
+        Route::post('/block-user', [AuthController::class,'blockUser']);
         Route::patch('/users/{id}/status', [AuthController::class,'updateStatus']);
         Route::get('/login-logs', [AuthController::class, 'loginLogs']);
     });
