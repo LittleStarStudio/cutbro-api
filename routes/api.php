@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\BarbershopController;
 use Illuminate\Http\Request;
 
 // Users Verification (API)
@@ -95,3 +96,10 @@ Route::prefix('auth')->group(function () {
     });
 
 });
+
+// Barbershop
+Route::prefix('barbershops')->group(function () {
+    Route::get('/', [BarbershopController::class, 'index']);
+    Route::get('/{slug}', [BarbershopController::class, 'show']);
+});
+
