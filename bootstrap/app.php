@@ -10,6 +10,9 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Http\Middleware\HandleCors;
 use Illuminate\Routing\Middleware\ThrottleRequests;
 
@@ -50,6 +53,32 @@ return Application::configure(basePath: dirname(__DIR__))
                     'success' => false,
                     'message' => 'Unauthenticated'
                 ], 401);
+            }
+        });
+
+        // Not Found (404 Model)
+        $exceptions->render(function (ModelNotFoundException $e, $request) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Resource not found'
+            ], 404);
+        });
+
+        // Not Found (404 Route)
+        $exceptions->render(function (NotFoundHttpException $e, $request) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Endpoint not found'
+            ], 404);
+        });
+
+        // Forbidden (403)
+        $exceptions->render(function (HttpException $e, $request) {
+            if ($e->getStatusCode() === 403) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Forbidden'
+                ], 403);
             }
         });
 

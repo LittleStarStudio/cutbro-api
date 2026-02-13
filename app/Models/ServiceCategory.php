@@ -6,22 +6,18 @@ use App\Traits\BelongsToBarbershop;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Service extends Model
+class ServiceCategory extends Model
 {
     use BelongsToBarbershop, SoftDeletes;
 
     protected $fillable = [
-        'category_id',
         'name',
-        'description',
-        'price',
-        'duration_minutes',
         'is_active'
     ];
 
-    public function category()
+    public function services()
     {
-        return $this->belongsTo(ServiceCategory::class);
+        return $this->hasMany(Service::class, 'category_id');
     }
 
 }

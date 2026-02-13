@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\BarbershopController;
+use App\Http\Controllers\Api\Owner\ServiceCategoryController;
+use App\Http\Controllers\Api\Owner\ServiceController;
 use Illuminate\Http\Request;
 
 // Users Verification (API)
@@ -103,3 +105,21 @@ Route::prefix('barbershops')->group(function () {
     Route::get('/{slug}', [BarbershopController::class, 'show']);
 });
 
+// Owner
+Route::prefix('owner')->group(function () {
+    
+    Route::middleware(['auth:sanctum', 'verified.api', 'token.expired', 'role:owner'])->group(function () {
+
+        // Service categories
+        Route::get('/service-categories', [ServiceCategoryController::class, 'index']);
+        Route::post('/service-categories', [ServiceCategoryController::class, 'store']);
+        Route::put('/service-categories/{serviceCategory}', [ServiceCategoryController::class, 'update']);
+        Route::delete('/service-categories/{serviceCategory}', [ServiceCategoryController::class, 'destroy']);
+
+        // Services
+        Route::get('/services', [ServiceController::class, 'index']);
+        Route::post('/services', [ServiceController::class, 'store']);
+        Route::put('/services/{service}', [ServiceController::class, 'update']);
+        Route::delete('/services/{service}', [ServiceController::class, 'destroy']);
+    });
+});
