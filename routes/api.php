@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\BarbershopController;
 use App\Http\Controllers\Api\Owner\ServiceCategoryController;
 use App\Http\Controllers\Api\Owner\ServiceController;
+use App\Http\Controllers\Api\Owner\BarberController;
 use Illuminate\Http\Request;
 
 // Users Verification (API)
@@ -121,5 +122,11 @@ Route::prefix('owner')->group(function () {
         Route::post('/services', [ServiceController::class, 'store']);
         Route::put('/services/{service}', [ServiceController::class, 'update']);
         Route::delete('/services/{service}', [ServiceController::class, 'destroy']);
+
+        // Barbers
+        Route::get('/barbers', [BarberController::class, 'index']);
+        Route::post('/barbers', [BarberController::class, 'store']);
+        Route::put('/barbers/{barber}', [BarberController::class, 'update']);
+        Route::delete('/barbers/{barber}', [BarberController::class, 'destroy']);
     });
 });

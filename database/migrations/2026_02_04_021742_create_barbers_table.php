@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('barbers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('barbershop_id');
+            $table->foreignId('created_by_owner_id');
             $table->foreignId('user_id');
             $table->text('bio')->nullable();
             $table->string('photo_url')->nullable();

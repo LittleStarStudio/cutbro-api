@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'role_id',
         'avatar_url',
         'status',
+        'email_verified_at',
         'login_attempts',
         'locked_until',
         'last_login_at',
@@ -76,6 +77,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function blocks()
     {
         return $this->hasMany(BarbershopUserBlock::class);
+    }
+
+    public function barber()
+    {
+        return $this->hasOne(Barber::class);
     }
     
 }
