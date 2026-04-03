@@ -11,17 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('barbers', function (Blueprint $table) {
+        Schema::create('shifts', function (Blueprint $table) {
             $table->id();
-
             $table->foreignId('barbershop_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('created_by_owner_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-
-            $table->text('bio')->nullable();
-            $table->string('photo_url')->nullable();
-            $table->string('status')->default('available');
-            $table->softDeletes();
+            $table->string('name');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });
     }
@@ -31,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('barbers');
+        Schema::dropIfExists('shifts');
     }
 };

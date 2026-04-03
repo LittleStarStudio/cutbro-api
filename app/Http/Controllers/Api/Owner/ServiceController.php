@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Owner;
 use App\Http\Controllers\Api\BaseController;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Services\ServiceService;
 
 class ServiceController extends BaseController
@@ -26,7 +27,12 @@ class ServiceController extends BaseController
     public function store(Request $request)
     {
         $data = $request->validate([
-            'category_id' => 'required|exists:service_categories,id',
+            'category_id' => [
+                'required',
+                Rule::exists('service_categories', 'id')
+                    ->where(fn ($q) => $q->where('barbershop_id', auth()->user()->barbershop_id))
+            ],
+
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric',
@@ -40,8 +46,19 @@ class ServiceController extends BaseController
 
     public function update(Request $request, Service $service)
     {
+        $owner = auth()->user();
+
+        if ($service->barbershop_id !== $owner->barbershop_id) {
+            abort(403, 'Unauthorized access to this service');
+        }
+
         $data = $request->validate([
-            'category_id' => 'sometimes|exists:service_categories,id',
+            'category_id' => [
+                'sometimes',
+                Rule::exists('service_categories', 'id')
+                    ->where(fn ($q) => $q->where('barbershop_id', auth()->user()->barbershop_id))
+            ],
+            
             'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
             'price' => 'sometimes|numeric',
@@ -56,10 +73,15 @@ class ServiceController extends BaseController
 
     public function destroy(Service $service)
     {
+        $owner = auth()->user();
+
+        if ($service->barbershop_id !== $owner->barbershop_id) {
+            abort(403, 'Unauthorized access to this service');
+        }
+
         $this->serviceService->delete($service);
 
-        return $this->success([
-            'message' => 'Service deleted'
-        ]);
+        return $this->success(null, 'Service deleted');
     }
+
 }

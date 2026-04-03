@@ -17,6 +17,18 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             PermissionSeeder::class,
             UserSeeder::class,
+
+            ServiceCategorySeeder::class,
+            ServiceSeeder::class,
+
+            ShiftSeeder::class,
+            BarberShiftAssignmentSeeder::class,
+
+            OperationalHourSeeder::class,
+
+            BookingSeeder::class,
+            BarbershopUserBlockSeeder::class,
         ]);
+        
     }
 }

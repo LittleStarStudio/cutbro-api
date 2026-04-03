@@ -83,5 +83,15 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(Barber::class);
     }
+
+    public function barbershop()
+    {
+        return $this->belongsTo(Barbershop::class);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class, 'customer_id');
+    }
     
 }

@@ -28,7 +28,7 @@ class BarberController extends BaseController
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
+            'password' => 'required|string|min:6',
             'bio' => 'nullable|string',
             'photo_url' => 'nullable|string',
         ]);
@@ -40,6 +40,12 @@ class BarberController extends BaseController
 
     public function update(Request $request, Barber $barber)
     {
+        $owner = auth()->user();
+
+        if ($barber->barbershop_id !== $owner->barbershop_id) {
+            abort(403, 'Unauthorized access to this barber');
+        }
+
         $data = $request->validate([
             'bio' => 'nullable|string',
             'photo_url' => 'nullable|string',
@@ -53,6 +59,12 @@ class BarberController extends BaseController
 
     public function destroy(Barber $barber)
     {
+        $owner = auth()->user();
+
+        if ($barber->barbershop_id !== $owner->barbershop_id) {
+            abort(403, 'Unauthorized access to this barber');
+        }
+
         $this->service->delete($barber);
 
         return $this->success([

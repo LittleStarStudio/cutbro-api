@@ -17,10 +17,10 @@ return new class extends Migration
             $table->foreignId('barbershop_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
 
-            $table->enum('status', ['blocked']);
             $table->string('reason')->nullable();
 
             $table->timestamps();
+            $table->softDeletes();
 
             $table->unique(['barbershop_id', 'user_id']);
         });
@@ -33,4 +33,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('barbershop_user_blocks');
     }
+
 };

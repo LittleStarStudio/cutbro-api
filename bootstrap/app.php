@@ -43,55 +43,44 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
 
-        // Unauthenticated (401)
-        $exceptions->render(function (
-            AuthenticationException $e,
-            Request $request
-        ) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthenticated'
-                ], 401);
-            }
+        // 401
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated'
+            ], 401);
         });
 
-        // Not Found (404 Model)
-        $exceptions->render(function (ModelNotFoundException $e, $request) {
+        // 404 Model
+        $exceptions->render(function (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Resource not found'
             ], 404);
         });
 
-        // Not Found (404 Route)
-        $exceptions->render(function (NotFoundHttpException $e, $request) {
+        // 404 Route
+        $exceptions->render(function (NotFoundHttpException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Endpoint not found'
             ], 404);
         });
 
-        // Forbidden (403)
-        $exceptions->render(function (HttpException $e, $request) {
-            if ($e->getStatusCode() === 403) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Forbidden'
-                ], 403);
-            }
+        // 400 / 403 / 422 / custom abort()
+        $exceptions->render(function (HttpException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage() ?: 'Error'
+            ], $e->getStatusCode());
         });
 
-        // Too Many Requests (Throttle - 429)
-        $exceptions->render(function (
-            ThrottleRequestsException $e,
-            Request $request
-        ) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Too many attempts. Please try again later.'
-                ], 429);
-            }
+        // 429
+        $exceptions->render(function (ThrottleRequestsException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Too many attempts. Please try again later.'
+            ], 429);
         });
+
     })->create();

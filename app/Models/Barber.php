@@ -18,6 +18,7 @@ class Barber extends Model
         'created_by_owner_id'
     ];
 
+    // Relational tables
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -27,4 +28,15 @@ class Barber extends Model
     {
         return $this->belongsTo(User::class, 'created_by_owner_id');
     }
+
+    public function shiftAssignments()
+    {
+        return $this->hasMany(BarberShiftAssignment::class);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
 }

@@ -7,6 +7,14 @@ use App\Http\Controllers\Api\BarbershopController;
 use App\Http\Controllers\Api\Owner\ServiceCategoryController;
 use App\Http\Controllers\Api\Owner\ServiceController;
 use App\Http\Controllers\Api\Owner\BarberController;
+
+use App\Http\Controllers\Api\Owner\BookingController as OwnerBookingController;
+use App\Http\Controllers\Api\Customer\BookingController as CustomerBookingController;
+
+use App\Http\Controllers\Api\Owner\ListBookingController as OwnerListBookingController;
+use App\Http\Controllers\Api\Customer\ListBookingController as CustomerListBookingController;
+
+use App\Models\User;
 use Illuminate\Http\Request;
 
 // Users Verification (API)
@@ -128,5 +136,31 @@ Route::prefix('owner')->group(function () {
         Route::post('/barbers', [BarberController::class, 'store']);
         Route::put('/barbers/{barber}', [BarberController::class, 'update']);
         Route::delete('/barbers/{barber}', [BarberController::class, 'destroy']);
+
+        // Bookings
+        Route::get('/bookings', [OwnerListBookingController::class, 'index']);
+        Route::patch('/bookings/{booking}/status', [OwnerBookingController::class, 'updateStatus']);
+
     });
 });
+
+// Customer
+Route::prefix('customer')->group(function () {
+
+    Route::middleware(['auth:sanctum','verified.api','token.expired','role:customer'])->group(function () {
+
+        // Bookings
+        Route::post('/bookings', [CustomerBookingController::class,'store']);
+
+        // Bookings cancel
+        Route::patch('/bookings/{booking}/cancel', [CustomerBookingController::class, 'cancel']);
+
+        // Available time slots (STEP SLOT SYSTEM)
+        Route::get('/available-slots', [CustomerBookingController::class, 'availableSlots']);
+
+        // My booking lists
+        Route::get('/bookings', [CustomerListBookingController::class, 'index']);
+    });
+
+});
+

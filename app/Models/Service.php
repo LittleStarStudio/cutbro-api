@@ -19,9 +19,15 @@ class Service extends Model
         'is_active'
     ];
 
+    // Relational tables
     public function category()
     {
         return $this->belongsTo(ServiceCategory::class);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
     }
 
 }

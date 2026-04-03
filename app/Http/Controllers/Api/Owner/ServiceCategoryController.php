@@ -36,6 +36,12 @@ class ServiceCategoryController extends BaseController
 
     public function update(Request $request, ServiceCategory $serviceCategory)
     {
+        $owner = auth()->user();
+
+        if ($serviceCategory->barbershop_id !== $owner->barbershop_id) {
+            abort(403, 'Unauthorized access to this category');
+        }
+
         $data = $request->validate([
             'name' => 'sometimes|string|max:255',
             'is_active' => 'sometimes|boolean'
@@ -48,10 +54,14 @@ class ServiceCategoryController extends BaseController
 
     public function destroy(ServiceCategory $serviceCategory)
     {
+        $owner = auth()->user();
+
+        if ($serviceCategory->barbershop_id !== $owner->barbershop_id) {
+            abort(403, 'Unauthorized access to this category');
+        }
+
         $this->service->delete($serviceCategory);
 
-        return $this->success([
-            'message' => 'Category deleted'
-        ]);
+        return $this->success(null, 'Category deleted');
     }
 }

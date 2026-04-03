@@ -2,10 +2,24 @@
 
 namespace App\Models;
 
-use App\Traits\BelongsToBarbershop;
 use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
-    use BelongsToBarbershop;
+
+    protected $fillable = [
+        'booking_id',
+        'payment_method',
+        'provider',
+        'amount',
+        'status',
+        'external_reference',
+        'paid_at'
+    ];
+
+    public function booking()
+    {
+        return $this->belongsTo(Booking::class);
+    }
+    
 }

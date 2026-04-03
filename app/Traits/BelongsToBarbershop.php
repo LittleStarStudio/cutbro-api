@@ -14,13 +14,13 @@ trait BelongsToBarbershop
         }
 
         static::addGlobalScope('tenant', function (Builder $query) {
-            if (Auth::check() && Auth::user()->barbershop_id) {
+            if (Auth::check() && Auth::user()->barbershop_id !== null) {
                 $query->where('barbershop_id', Auth::user()->barbershop_id);
             }
         });
 
         static::creating(function ($model) {
-            if (Auth::check()) {
+            if (Auth::check() && empty($model->barbershop_id)) {
                 $model->barbershop_id = Auth::user()->barbershop_id;
             }
         });
