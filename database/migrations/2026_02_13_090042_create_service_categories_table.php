@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('services', function (Blueprint $table) {
+        Schema::create('service_categories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('barbershop_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('barbershop_id');
             $table->string('name');
-            $table->text('description')->nullable();
-            $table->decimal('price');
-            $table->integer('duration_minutes');
             $table->boolean('is_active')->default(true);
             $table->softDeletes();
             $table->timestamps();
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('services');
+        Schema::dropIfExists('service_categories');
     }
 };

@@ -13,16 +13,29 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('barbershop_id');
-            $table->foreignId('customer_id');
-            $table->foreignId('barber_id');
-            $table->foreignId('service_id');
+
+            $table->foreignId('barbershop_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('customer_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('barber_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('service_id')->constrained()->cascadeOnDelete();
+
             $table->date('booking_date');
             $table->time('start_time');
             $table->time('end_time');
-            $table->string('status')->default('pending');
-            $table->decimal('total_price');
+            $table->string('status')->default('pending_payment');
+            $table->decimal('total_price', 12, 2);
+            $table->softDeletes();
             $table->timestamps();
+
+            $table->unique([
+                'barber_id',
+                'booking_date',
+                'start_time',
+                'deleted_at'
+            ]);
+
+            $table->index(['barber_id', 'booking_date']);
+            $table->index(['customer_id', 'booking_date']);
         });
     }
 

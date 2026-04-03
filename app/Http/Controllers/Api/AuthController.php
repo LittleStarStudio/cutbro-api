@@ -311,7 +311,11 @@ class AuthController extends BaseController
         $token = $request->input('refresh_token');
 
         // Pisah id|token
-        [$id, $plainToken] = explode('|', $token);
+        if (!str_contains($token, '|')) {
+            return $this->error('Invalid token format', 401);
+        }
+
+        [$id, $plainToken] = explode('|', $token, 2);
 
         $tokenModel = \Laravel\Sanctum\PersonalAccessToken::find($id);
 
@@ -349,7 +353,7 @@ class AuthController extends BaseController
         // Cretate access token baru
         $accessToken = $user->createToken(
             'access_token',
-            ['auth'],
+            [$user->role->name],
             now()->addMinutes(15)
         )->plainTextToken;
 
@@ -496,7 +500,7 @@ class AuthController extends BaseController
         // Create barbershop
         $barbershop = Barbershop::create([
             'name' => $request->barbershop_name,
-            'slug' => \Str::slug($request->barbershop_name),
+            'slug' => Str::slug($request->barbershop_name) . '-' . Str::random(5),
             'address' => '-',
             'city' => '-',
             'phone' => '-',
@@ -810,7 +814,7 @@ class AuthController extends BaseController
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            'role_id' => $user->role_id,
+            'role' => $user->role->name,
             'barbershop_id' => $user->barbershop_id,
             'status' => $user->status,
             'created_at' => $user->created_at,

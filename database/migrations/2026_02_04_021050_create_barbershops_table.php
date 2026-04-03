@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('city');
             $table->decimal('latitude')->nullable();
             $table->decimal('longitude')->nullable();
-            $table->string('phone');
+            $table->string('phone')->unique();
             $table->string('status')->default('active');
             $table->softDeletes();
             $table->timestamps();
